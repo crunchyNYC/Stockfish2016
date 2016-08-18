@@ -44,11 +44,10 @@ namespace {
 
   double move_importance(int ply) {
 
-    const double XScale = 7.64;
-    const double XShift = 58.4;
-    const double Skew   = 0.183;
+    const double Intercept = 0.893;
+    const double Slope = -0.00153;
 
-    return pow((1 + exp((ply - XShift) / XScale)), -Skew) + DBL_MIN; // Ensure non-zero
+    return Slope * ply + Intercept; // Must be non-zero!
   }
 
   template<TimeType T>
