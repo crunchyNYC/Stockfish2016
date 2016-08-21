@@ -33,8 +33,17 @@ namespace {
   enum TimeType { OptimumTime, MaxTime };
 
   const int MoveHorizon   = 50;   // Plan time management at most this many moves ahead
-  const double MaxRatio   = 7.09; // When in trouble, we can step over reserved time with this ratio
-  const double StealRatio = 0.35; // However we must not steal time from remaining moves over this ratio
+
+int MaxRatioTune = 883;
+int StealRatioTune = 38;
+int XScaleTune = 679;
+int XSHiftTune = 540;
+int SkewTune = 208;
+
+TUNE(MaxRatioTune, StealRatioTune, XScaleTune, XSHiftTune, SkewTune);
+
+  const double MaxRatio   = MaxRatioTune / 100; // When in trouble, we can step over reserved time with this ratio
+  const double StealRatio = StealRatioTune / 100; // However we must not steal time from remaining moves over this ratio
 
 
   // move_importance() is a skew-logistic function based on naive statistical
@@ -44,9 +53,9 @@ namespace {
 
   double move_importance(int ply) {
 
-    const double XScale = 7.64;
-    const double XShift = 58.4;
-    const double Skew   = 0.183;
+    const double XScale = XScaleTune / 100;
+    const double XShift = XSHiftTune / 10;
+    const double Skew   = SkewTune / 1000;
 
     return pow((1 + exp((ply - XShift) / XScale)), -Skew) + DBL_MIN; // Ensure non-zero
   }
