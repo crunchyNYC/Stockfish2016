@@ -42,14 +42,21 @@ namespace {
   // is considered "undecided" as long as neither side has >275cp advantage.
   // Data was extracted from the CCRL game database with some simple filtering criteria.
 
+    int fitted_func [50];
+
   double move_importance(int ply) {
 
-    const double XScale = 7.64;
-    const double XShift = 58.4;
-    const double Skew   = 0.183;
+//    const double XScale = 7.64;
+//    const double XShift = 58.4;
+//    const double Skew   = 0.183;
 
-    return pow((1 + exp((ply - XShift) / XScale)), -Skew) + DBL_MIN; // Ensure non-zero
+//    return pow((1 + exp((ply - XShift) / XScale)), -Skew) + DBL_MIN; // Ensure non-zero
+
+      return fitted_func[ply]/100000 + 1 + DBL_MIN;
+
   }
+  
+      TUNE(SetRange(-80000, 10000), fitted_func);
 
   template<TimeType T>
   int remaining(int myTime, int movesToGo, int ply, int slowMover) {
