@@ -42,7 +42,7 @@ namespace {
   // is considered "undecided" as long as neither side has >275cp advantage.
   // Data was extracted from the CCRL game database with some simple filtering criteria.
 
-    int fitted_func [50];
+    int fitted_func [512];
 
   double move_importance(int ply) {
 
@@ -52,7 +52,7 @@ namespace {
 
 //    return pow((1 + exp((ply - XShift) / XScale)), -Skew) + DBL_MIN; // Ensure non-zero
 
-      return fitted_func[ply]/100000 + 1 + DBL_MIN;
+      return fitted_func[ply]/100000.0 + 1.0 + DBL_MIN;
 
   }
   
