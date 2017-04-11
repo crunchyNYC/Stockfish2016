@@ -33,30 +33,21 @@ namespace {
   enum TimeType { OptimumTime, MaxTime };
 
   const int MoveHorizon   = 50;   // Plan time management at most this many moves ahead
-  const double MaxRatio   = 7.09; // When in trouble, we can step over reserved time with this ratio
-  const double StealRatio = 0.35; // However we must not steal time from remaining moves over this ratio
+  int MaxRatioInt   = 709; // When in trouble, we can step over reserved time with this ratio
+  int StealRatioInt = 35; // However we must not steal time from remaining moves over this ratio
+  double MaxRatio = MaxRatioInt/100.0;
+  double StealRatio = StealRatioInt/100.0;
 
-
-  // move_importance() is a skew-logistic function based on naive statistical
-  // analysis of "how many games are still undecided after n half-moves". Game
-  // is considered "undecided" as long as neither side has >275cp advantage.
-  // Data was extracted from the CCRL game database with some simple filtering criteria.
-
-    int fitted_func [512];
+  int fitted_func[65] = {0};
 
   double move_importance(int ply) {
-
-//    const double XScale = 7.64;
-//    const double XShift = 58.4;
-//    const double Skew   = 0.183;
-
-//    return pow((1 + exp((ply - XShift) / XScale)), -Skew) + DBL_MIN; // Ensure non-zero
-
-      return fitted_func[ply]/100000.0 + 1.0 + DBL_MIN;
-
-  }
+    
+    return fitted_func[std::min((ply-1)/2, 64)] / 100000.0 + 1.0 + DBL_MIN; // Ensure non-zero
   
-      TUNE(SetRange(-80000, 10000), fitted_func);
+  }
+
+  TUNE(MaxRatioInt, StealRatioInt, SetRange(-80000, 10000), fitted_func);
+
 
   template<TimeType T>
   int remaining(int myTime, int movesToGo, int ply, int slowMover) {
