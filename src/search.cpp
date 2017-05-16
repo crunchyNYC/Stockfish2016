@@ -490,8 +490,12 @@ void Thread::search() {
                                && mainThread->bestMoveChanges < 0.03
                                && Time.elapsed() > Time.optimum() * 5 / 44;
 
+              // Scale thinking time depending on if position is winning, losing or hanging in the balance
+              // Deliberately give max thinking time when position is lost by about 1.5 cp
+              double thinkLonger = - pow(150 - bestValue, 2);
+
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * unstablePvFactor * improvingFactor / 628
+                  || Time.elapsed() > Time.optimum() * unstablePvFactor * improvingFactor * thinkLonger / 628
                   || (mainThread->easyMovePlayed = doEasyMove, doEasyMove))
               {
                   // If we are allowed to ponder do not stop the search now but
