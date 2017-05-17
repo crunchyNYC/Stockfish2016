@@ -492,7 +492,7 @@ void Thread::search() {
 
               // Scale thinking time depending on if position is winning, losing or hanging in the balance
               // Deliberately give max thinking time when position is lost by about 1.5 cp
-              double thinkLonger = 1 - ( (pow(bestValue+150,2)/150) / (pow(10.0*150+150,2)/150));
+              double thinkLonger = 1.5 - ( (pow(100*bestValue/PawnValueEg+150,2)/150) / (pow(10.0*150+150,2)/150));
 
               if (   rootMoves.size() == 1
                   || Time.elapsed() > Time.optimum() * unstablePvFactor * improvingFactor * thinkLonger / 628
