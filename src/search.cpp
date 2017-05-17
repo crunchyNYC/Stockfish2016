@@ -494,7 +494,7 @@ void Thread::search() {
               // Effectively gives more time if eval is betwen 0 and -4, with max increase of 64% at eval -2.
               double thinkLonger = 1;
               if (bestValue > -4 && bestValue < 0 )
-                  thinkLonger =  1 + (pow( ((-4 - bestValue)*(0 + bestValue)), 3))/100;
+                  thinkLonger =  1 + (pow( ((-4 - bestValue)*(0 + bestValue)), 3))/200;
 
               if (   rootMoves.size() == 1
                   || Time.elapsed() > Time.optimum() * unstablePvFactor * improvingFactor * thinkLonger / 628
