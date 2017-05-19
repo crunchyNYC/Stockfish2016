@@ -197,10 +197,9 @@ void Search::clear() {
       th->history.clear();
       th->counterMoveHistory.clear();
       th->resetCalls = true;
-
       CounterMoveStats& cm = th->counterMoveHistory[NO_PIECE][0];
-      auto* t = &cm[NO_PIECE][0];
-      std::fill(t, t + sizeof(cm)/sizeof(*t), CounterMovePruneThreshold - 1);
+      int* t = &cm[NO_PIECE][0];
+      std::fill(t, t + sizeof(cm), CounterMovePruneThreshold - 1);
   }
 
   Threads.main()->previousScore = VALUE_INFINITE;
@@ -490,9 +489,18 @@ void Thread::search() {
               bool doEasyMove =   rootMoves[0].pv[0] == easyMove
                                && mainThread->bestMoveChanges < 0.03
                                && Time.elapsed() > Time.optimum() * 5 / 44;
+                               
+              // Normalize bestValue
+              double bVal = (double)bestValue/(double)PawnValueEg;
+
+              // If position starts getting bad, but still winnable, increase thinking time.
+              // Give more time if eval is betwen -3 and 0, with max increase of extra 100% thinking time at eval -1.5.
+              double thinkLonger = 1;
+              if (bVal > -3 && bVal < 0 )
+                  thinkLonger =  1 + ((pow( ((-3 - bVal)*(0 + bVal)), 3)) / (729/(double)64));
 
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * unstablePvFactor * improvingFactor / 628
+                  || Time.elapsed() > Time.optimum() * unstablePvFactor * improvingFactor * thinkLonger / 628
                   || (mainThread->easyMovePlayed = doEasyMove, doEasyMove))
               {
                   // If we are allowed to ponder do not stop the search now but
