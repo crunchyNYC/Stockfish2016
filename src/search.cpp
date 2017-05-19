@@ -491,7 +491,7 @@ void Thread::search() {
                                && Time.elapsed() > Time.optimum() * 5 / 44;
                                
               // Normalize bestValue
-              double bVal = bestValue / (double)PawnValueEg;
+              double bVal = (double)bestValue/(double)PawnValueEg;
 
               // If position starts getting bad, but still winnable, increase thinking time.
               // Give more time if eval is betwen -4 and 1, with max increase of extra 25% thinking time at eval -1.5.
