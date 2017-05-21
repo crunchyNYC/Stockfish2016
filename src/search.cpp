@@ -490,9 +490,19 @@ void Thread::search() {
               bool doEasyMove =   rootMoves[0].pv[0] == easyMove
                                && mainThread->bestMoveChanges < 0.03
                                && Time.elapsed() > Time.optimum() * 5 / 44;
+                               
+              // Normalize bestValue
+              double bVal = (double)bestValue/(double)PawnValueEg;
+
+              // If position starts getting worse, but still winnable, increase thinking time.
+              // Give more time if eval is between -3 and +0.25, 
+              // with max increase of 25% extra thinking time at eval -0.83.
+              double thinkLonger = 1;
+              if (bVal > -3 && bVal < 0.25 )
+                  thinkLonger =  1 + pow( (-3 - bVal), 2) * pow( (-0.25 + bVal), 2) / (25.8638 * 4);
 
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * unstablePvFactor * improvingFactor / 628
+                  || Time.elapsed() > Time.optimum() * unstablePvFactor * improvingFactor * thinkLonger / 628
                   || (mainThread->easyMovePlayed = doEasyMove, doEasyMove))
               {
                   // If we are allowed to ponder do not stop the search now but
